@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useAuthStore } from '@/stores/authStore'
 
 interface Message {
   id: string
@@ -21,7 +22,7 @@ interface ChatState {
   threadId: string | null
   setMinimized: (state: boolean) => void
   addMessage: (message: Message) => void
-  setThreadId: (id: string) => void
+  setThreadId: (threadId: string) => void
   resetChat: () => void
 }
 
@@ -35,7 +36,7 @@ export const useChatStore = create<ChatState>()(
       addMessage: (message) => set((state) => ({ 
         messages: [...state.messages, message] 
       })),
-      setThreadId: (id) => set({ threadId: id }),
+      setThreadId: (threadId) => set({ threadId }),
       resetChat: () => set({ 
         messages: [INITIAL_MESSAGE],
         isMinimized: false,
