@@ -1,8 +1,6 @@
 import { useOraculistasStore } from '@/modules/oraculistas/store/oraculistasStore'
 
-export async function getResolvedPrompt(): Promise<string> {
-  const { oraculistas } = useOraculistasStore.getState()
-  
+export async function getResolvedPrompt(oraculistas: any[]): Promise<string> {
   const oraculistasInfo = oraculistas.map(o => `
     Nome: ${o.nome}
     Especialidades: ${o.especialidades}
