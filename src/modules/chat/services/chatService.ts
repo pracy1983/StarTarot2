@@ -1,29 +1,28 @@
 import { getResolvedPrompt } from '@/config/prompts/chatAgentPrompt'
-import { Message } from '../types/message'
+import { Message, ApiMessage } from '../types/message'
 import { useOraculistasStore } from '@/modules/oraculistas/store/oraculistasStore'
 import { supabase } from '@/lib/supabase'
 
 export class ChatService {
-  private messages: Message[] = []
+  private messages: ApiMessage[] = []
   private apiUrl = 'https://api.deepseek.com/v1/chat/completions'
+  private oraculistas: any[] = []
 
   constructor() {
-    this.initializeChat()
+    // Removemos o initializeChat do constructor
   }
 
-  private async initializeChat() {
-    // Carrega os oraculistas primeiro
-    const { carregarOraculistas } = useOraculistasStore.getState()
-    await carregarOraculistas()
-    
-    // Depois pega o prompt já com os oraculistas carregados
-    const systemPrompt = await getResolvedPrompt()
+  // Novo método para inicializar com os oraculistas
+  async initialize(oraculistas: any[]) {
+    this.oraculistas = oraculistas
+    const oraculistasList = useOraculistasStore.getState().oraculistas;
+    const systemPrompt = await getResolvedPrompt(oraculistasList)
     this.messages = [
       { role: 'system', content: systemPrompt }
     ]
   }
 
-  async retrieveHistory(userId: string): Promise<Message[]> {
+  async retrieveHistory(userId: string): Promise<ApiMessage[]> {
     try {
       const { data: messages, error } = await supabase
         .from('chat_messages')
@@ -43,58 +42,62 @@ export class ChatService {
     }
   }
 
-  async sendMessage(content: string, userId: string): Promise<Message> {
+  async sendMessage(content: string, userId: string): Promise<ApiMessage> {
     try {
-      // Primeiro, recupera o histórico de mensagens
-      const history = await this.retrieveHistory(userId)
-      
-      // Reseta as mensagens com o prompt do sistema e o histórico
-      const systemPrompt = await getResolvedPrompt()
-      this.messages = [
-        { role: 'system', content: systemPrompt },
-        ...history
-      ]
-
-      // Adiciona a nova mensagem do usuário
-      const userMessage: Message = { role: 'user', content }
-      this.messages.push(userMessage)
-
-      const response = await fetch(this.apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages: this.messages,
-          temperature: 0.7,
-          max_tokens: 2000,
-          top_p: 0.95,
-          frequency_penalty: 0,
-          presence_penalty: 0
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Erro na chamada da API')
+      // Se não tiver sido inicializado ainda, usa um prompt padrão
+      if (this.messages.length === 0) {
+        this.messages = [
+          { 
+            role: 'system', 
+            content: "Você é uma assistente do StarTarot, especializada em ajudar pessoas a encontrarem o oraculista ideal para suas necessidades." 
+          }
+        ]
       }
 
-      const data = await response.json()
-      const assistantMessage = data.choices[0].message
+      // Adiciona a mensagem do usuário
+      const userMessage: ApiMessage = { role: 'user', content }
+      this.messages.push(userMessage)
 
-      // Salva a mensagem no Supabase
+      // Por enquanto, vamos usar respostas mock para teste
+      const mockResponse: ApiMessage = {
+        role: 'assistant',
+        content: this.getMockResponse(content)
+      }
+
+      // Salva as mensagens
       await this.saveMessage(userMessage, userId)
-      await this.saveMessage(assistantMessage, userId)
+      await this.saveMessage(mockResponse, userId)
 
-      return assistantMessage
+      return mockResponse
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
       throw error
     }
   }
 
-  private async saveMessage(message: Message, userId: string) {
+  private getMockResponse(userMessage: string): string {
+    if (this.messages.length <= 2) {
+      return "Oie! Como posso te ajudar hoje? Seja direto no tipo de questão que você precisa de ajuda, pra eu poder te ajudar da melhor forma possível te indicando a energia certa pro seu caso."
+    }
+
+    const responses = [
+      "Entendi sua preocupação. Temos alguns oraculistas especializados que podem te ajudar com isso:",
+      "Baseado no que você me contou, posso te recomendar alguns de nossos melhores oraculistas:",
+      "Para sua situação, temos algumas opções excelentes:"
+    ]
+
+    const oraculistas = [
+      "\n\n- A **Cigana Flora** trabalha com baralho cigano e tem uma abordagem mais intuitiva. A consulta está em promoção por R$13.",
+      "\n\n- O **Mago Negro** usa o tarot dos daemons e é mais direto e prático. A consulta com ele está por R$17.",
+      "\n\n- A **Vó Cleusa** é especialista em destino e missão de vida, usando o tarot dos anjos. A consulta está por R$20."
+    ]
+
+    return responses[Math.floor(Math.random() * responses.length)] + 
+           oraculistas.join('') +
+           "\n\nQual você prefere? [CONSULTAR:Cigana Flora] [CONSULTAR:Mago Negro] [CONSULTAR:Vó Cleusa]"
+  }
+
+  private async saveMessage(message: ApiMessage, userId: string) {
     try {
       const { error } = await supabase
         .from('chat_messages')
