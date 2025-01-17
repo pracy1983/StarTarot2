@@ -1,5 +1,5 @@
 [build]
-  command = "next build"
+  command = "npm install && next build"
   publish = ".next"
 
 [[plugins]]
@@ -8,3 +8,4 @@
 [build.environment]
   NEXT_USE_NETLIFY_EDGE = "true"
   NEXT_PRIVATE_TARGET = "server"
+  NODE_VERSION = "18"
