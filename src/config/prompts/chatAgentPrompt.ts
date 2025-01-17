@@ -5,7 +5,7 @@ export async function getResolvedPrompt(): Promise<string> {
   
   const oraculistasInfo = oraculistas.map(o => `
     Nome: ${o.nome}
-    Especialidade: ${o.especialidade}
+    Especialidades: ${o.especialidades}
     Descrição: ${o.descricao}
   `).join('\n')
 
