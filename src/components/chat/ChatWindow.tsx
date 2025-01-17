@@ -59,7 +59,7 @@ export function ChatWindow() {
 
     try {
       const history = messages.map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'assistant',
+        role: msg.sender === 'user' ? 'user' as const : 'assistant' as const,
         content: msg.content
       }))
 
