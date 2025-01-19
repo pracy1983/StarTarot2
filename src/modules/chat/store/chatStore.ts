@@ -1,18 +1,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { useAuthStore } from '@/stores/authStore'
-
-interface Message {
-  id: string
-  content: string
-  sender: 'user' | 'agent'
-  timestamp: Date
-}
+import { Message } from '../types/message'
 
 const INITIAL_MESSAGE: Message = {
   id: '0',
-  content: 'Olá, vamos escolher o melhor oraculista pra você? Me fale um pouco no que acredita e que tipo de ajuda precisa.',
-  sender: 'agent',
+  content: 'Olá, vamos escolher o melhor oraculista...',
+  sender: 'agent' as const,
   timestamp: new Date()
 }
 

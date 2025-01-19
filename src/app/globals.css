@@ -63,3 +63,8 @@ body {
 ::-webkit-scrollbar-button:horizontal:end:increment {
   background-color: rgba(255, 193, 7, 0.3);
 }
+
+.chat-background {
+  background-color: rgba(0, 0, 0, 0.98);
+  backdrop-filter: blur(8px);
+}

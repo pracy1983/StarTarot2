@@ -1,10 +1,10 @@
 import { getResolvedPrompt } from '@/config/prompts/chatAgentPrompt'
-import { Message, ApiMessage } from '../types/message'
+import { Message } from '../types/message'
 import { useOraculistasStore } from '@/modules/oraculistas/store/oraculistasStore'
 import { supabase } from '@/lib/supabase'
 
 export class ChatService {
-  private messages: ApiMessage[] = []
+  private messages: Message[] = []
   private apiUrl = 'https://api.deepseek.com/v1/chat/completions'
   private oraculistas: any[] = []
 
@@ -22,7 +22,7 @@ export class ChatService {
     ]
   }
 
-  async retrieveHistory(userId: string): Promise<ApiMessage[]> {
+  async retrieveHistory(userId: string): Promise<Message[]> {
     try {
       const { data: messages, error } = await supabase
         .from('chat_messages')
@@ -42,7 +42,7 @@ export class ChatService {
     }
   }
 
-  async sendMessage(content: string, userId: string): Promise<ApiMessage> {
+  async sendMessage(content: string, userId: string): Promise<Message> {
     try {
       // Se não tiver sido inicializado ainda, usa um prompt padrão
       if (this.messages.length === 0) {
@@ -55,49 +55,45 @@ export class ChatService {
       }
 
       // Adiciona a mensagem do usuário
-      const userMessage: ApiMessage = { role: 'user', content }
+      const userMessage: Message = { role: 'user', content }
       this.messages.push(userMessage)
 
-      // Por enquanto, vamos usar respostas mock para teste
-      const mockResponse: ApiMessage = {
-        role: 'assistant',
-        content: this.getMockResponse(content)
+      // Faz a chamada para a API do DeepSeek
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY}`
+        },
+        body: JSON.stringify({
+          messages: this.messages,
+          temperature: 0.7,
+          max_tokens: 1000
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.statusText}`);
       }
+
+      const data = await response.json();
+      const assistantMessage: Message = {
+        role: 'assistant',
+        content: data.choices[0].message.content
+      };
 
       // Salva as mensagens
       await this.saveMessage(userMessage, userId)
-      await this.saveMessage(mockResponse, userId)
+      await this.saveMessage(assistantMessage, userId)
 
-      return mockResponse
+      return assistantMessage;
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
       throw error
     }
   }
 
-  private getMockResponse(userMessage: string): string {
-    if (this.messages.length <= 2) {
-      return "Oie! Como posso te ajudar hoje? Seja direto no tipo de questão que você precisa de ajuda, pra eu poder te ajudar da melhor forma possível te indicando a energia certa pro seu caso."
-    }
-
-    const responses = [
-      "Entendi sua preocupação. Temos alguns oraculistas especializados que podem te ajudar com isso:",
-      "Baseado no que você me contou, posso te recomendar alguns de nossos melhores oraculistas:",
-      "Para sua situação, temos algumas opções excelentes:"
-    ]
-
-    const oraculistas = [
-      "\n\n- A **Cigana Flora** trabalha com baralho cigano e tem uma abordagem mais intuitiva. A consulta está em promoção por R$13.",
-      "\n\n- O **Mago Negro** usa o tarot dos daemons e é mais direto e prático. A consulta com ele está por R$17.",
-      "\n\n- A **Vó Cleusa** é especialista em destino e missão de vida, usando o tarot dos anjos. A consulta está por R$20."
-    ]
-
-    return responses[Math.floor(Math.random() * responses.length)] + 
-           oraculistas.join('') +
-           "\n\nQual você prefere? [CONSULTAR:Cigana Flora] [CONSULTAR:Mago Negro] [CONSULTAR:Vó Cleusa]"
-  }
-
-  private async saveMessage(message: ApiMessage, userId: string) {
+  private async saveMessage(message: Message, userId: string) {
     try {
       const { error } = await supabase
         .from('chat_messages')

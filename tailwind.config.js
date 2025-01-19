@@ -9,10 +9,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        surface: '#1A1A1A',
         primary: {
-          DEFAULT: '#FFB800',
-          light: '#FFD700',
-          dark: '#CC9200',
+          DEFAULT: '#FFD700',
+          light: '#FFE44D',
+          dark: '#B39700',
         },
         background: {
           DEFAULT: '#000000',
@@ -28,6 +29,9 @@ module.exports = {
         montserrat: ['var(--font-montserrat)'],
         raleway: ['var(--font-raleway)'],
       },
+      backgroundColor: {
+        'chat-bg': '#000000f9',
+      }
     },
   },
   plugins: [],
