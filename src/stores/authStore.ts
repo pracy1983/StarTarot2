@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
 
   checkAuth: async () => {
-    console.log('StarTarot Auth Version: 2.0 (Supabase Real)')
+    console.log('StarTarot Auth Version: 2.1 (Pushed at 19:18)')
     try {
       const { data: { session } } = await supabase.auth.getSession()
 
