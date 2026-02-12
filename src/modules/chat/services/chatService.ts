@@ -1,10 +1,10 @@
 import { getResolvedPrompt } from '@/config/prompts/chatAgentPrompt'
-import { Message } from '../types/message'
+import { Message, ApiMessage } from '../types/message'
 import { useOraculistasStore } from '@/modules/oraculistas/store/oraculistasStore'
 import { supabase } from '@/lib/supabase'
 
 export class ChatService {
-  private messages: Message[] = []
+  private messages: ApiMessage[] = []
   private apiUrl = 'https://api.deepseek.com/v1/chat/completions'
   private oraculistas: any[] = []
 
@@ -22,7 +22,7 @@ export class ChatService {
     ]
   }
 
-  async retrieveHistory(userId: string): Promise<Message[]> {
+  async retrieveHistory(userId: string): Promise<ApiMessage[]> {
     try {
       const { data: messages, error } = await supabase
         .from('chat_messages')
@@ -47,15 +47,15 @@ export class ChatService {
       // Se não tiver sido inicializado ainda, usa um prompt padrão
       if (this.messages.length === 0) {
         this.messages = [
-          { 
-            role: 'system', 
-            content: "Você é uma assistente do StarTarot, especializada em ajudar pessoas a encontrarem o oraculista ideal para suas necessidades." 
+          {
+            role: 'system',
+            content: "Você é uma assistente do StarTarot, especializada em ajudar pessoas a encontrarem o oraculista ideal para suas necessidades."
           }
         ]
       }
 
       // Adiciona a mensagem do usuário
-      const userMessage: Message = { role: 'user', content }
+      const userMessage: ApiMessage = { role: 'user', content }
       this.messages.push(userMessage)
 
       // Faz a chamada para a API do DeepSeek
@@ -77,7 +77,7 @@ export class ChatService {
       }
 
       const data = await response.json();
-      const assistantMessage: Message = {
+      const assistantMessage: ApiMessage = {
         role: 'assistant',
         content: data.choices[0].message.content
       };
@@ -86,14 +86,18 @@ export class ChatService {
       await this.saveMessage(userMessage, userId)
       await this.saveMessage(assistantMessage, userId)
 
-      return assistantMessage;
+      // Retorna no formato Message para compatibilidade
+      return {
+        role: assistantMessage.role,
+        content: assistantMessage.content
+      } as any;
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
       throw error
     }
   }
 
-  private async saveMessage(message: Message, userId: string) {
+  private async saveMessage(message: ApiMessage, userId: string) {
     try {
       const { error } = await supabase
         .from('chat_messages')

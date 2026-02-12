@@ -8,7 +8,7 @@ import { useChatStore } from '../store/chatStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useOraculistasStore } from '@/modules/oraculistas/store/oraculistasStore'
 import { v4 as uuidv4 } from 'uuid'
-import { Message } from '../types/message'
+import { Message, ApiMessage } from '../types/message'
 
 export function ChatWindow() {
   const router = useRouter()
@@ -33,16 +33,17 @@ export function ChatWindow() {
       chatService.current = new ChatService()
       console.log('ChatService inicializado')
     }
-    
+
     if (user?.id && chatService.current) {
       chatService.current.retrieveHistory(user.id).then(history => {
         if (history.length > 0) {
-          history.forEach((message: Message) => {
+          history.forEach((message: ApiMessage) => {
             const newMessage: Message = {
               id: uuidv4(),
               content: message.content,
-              sender: message.sender,
-              timestamp: new Date()
+              sender: message.role === 'user' ? 'user' : 'assistant',
+              timestamp: new Date(),
+              role: message.role
             }
             addMessage(newMessage)
           })
@@ -71,8 +72,9 @@ export function ChatWindow() {
       const initialMessage: Message = {
         id: uuidv4(),
         content: "Oie! Como posso te ajudar hoje? Seja direto no tipo de questão que você precisa de ajuda, pra eu poder te ajudar da melhor forma possível te indicando a energia certa pro seu caso.",
-        sender: 'agent' as const,
-        timestamp: new Date()
+        sender: 'assistant' as const,
+        timestamp: new Date(),
+        role: 'assistant'
       }
       addMessage(initialMessage)
     }
@@ -101,11 +103,11 @@ export function ChatWindow() {
       userId: user?.id,
       hasChatService: !!chatService.current
     })
-    
+
     if (!inputMessage.trim() || !user?.id) {
-      console.log('2. Validação falhou:', { 
+      console.log('2. Validação falhou:', {
         hasInput: !!inputMessage.trim(),
-        hasUser: !!user?.id 
+        hasUser: !!user?.id
       })
       return
     }
@@ -114,7 +116,8 @@ export function ChatWindow() {
       id: uuidv4(),
       content: inputMessage,
       sender: 'user' as const,
-      timestamp: new Date()
+      timestamp: new Date(),
+      role: 'user'
     }
 
     console.log('3. Mensagem do usuário:', userMessage)
@@ -135,17 +138,18 @@ export function ChatWindow() {
       if (response?.content) {
         console.log('7. Processando resposta:', response.content)
         const paragraphs = response.content.split('\n\n')
-        
+
         for (const paragraph of paragraphs) {
           if (paragraph.trim()) {
             console.log('8. Adicionando parágrafo:', paragraph.trim())
             await new Promise(resolve => setTimeout(resolve, 1000))
-            
+
             const agentMessage: Message = {
               id: uuidv4(),
               content: paragraph.trim(),
-              sender: 'agent' as const,
-              timestamp: new Date()
+              sender: 'assistant' as const,
+              timestamp: new Date(),
+              role: 'assistant'
             }
             addMessage(agentMessage)
           }
@@ -159,8 +163,9 @@ export function ChatWindow() {
       const errorMessage: Message = {
         id: uuidv4(),
         content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
-        sender: 'agent' as const,
-        timestamp: new Date()
+        sender: 'assistant' as const,
+        timestamp: new Date(),
+        role: 'assistant'
       }
       addMessage(errorMessage)
     } finally {
@@ -169,13 +174,12 @@ export function ChatWindow() {
   }
 
   return (
-    <div 
-      className={`fixed bottom-4 right-4 z-50 w-96 bg-black/95 backdrop-blur-sm rounded-xl shadow-xl border border-primary/20 transition-all duration-300 ${
-        isMinimized ? 'h-14' : 'h-[600px]'
-      }`}
+    <div
+      className={`fixed bottom-4 right-4 z-50 w-96 bg-black/95 backdrop-blur-sm rounded-xl shadow-xl border border-primary/20 transition-all duration-300 ${isMinimized ? 'h-14' : 'h-[600px]'
+        }`}
     >
       {/* Header do Chat */}
-      <div 
+      <div
         className="flex items-center justify-between p-4 border-b border-primary/20 bg-black/95"
       >
         <h3 className="text-lg font-bold text-primary">Chat StarTarot</h3>
@@ -196,23 +200,21 @@ export function ChatWindow() {
       {/* Área de Mensagens */}
       {!isMinimized && (
         <>
-          <div 
+          <div
             ref={chatRef}
             className="flex-1 p-4 overflow-y-auto h-[calc(100%-8rem)] space-y-4 bg-black/95"
           >
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${
-                  message.sender === 'user' ? 'justify-end' : 'justify-start'
-                }`}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'
+                  }`}
               >
                 <div
-                  className={`max-w-[75%] p-3 rounded-lg shadow-md ${
-                    message.sender === 'user'
-                      ? 'bg-primary text-black'
-                      : 'bg-[rgba(0,0,0,0.98)] text-white border border-primary/10'
-                  }`}
+                  className={`max-w-[75%] p-3 rounded-lg shadow-md ${message.sender === 'user'
+                    ? 'bg-primary text-black'
+                    : 'bg-[rgba(0,0,0,0.98)] text-white border border-primary/10'
+                    }`}
                 >
                   {message.content}
                 </div>

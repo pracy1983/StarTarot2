@@ -5,8 +5,9 @@ import { Message } from '../types/message'
 const INITIAL_MESSAGE: Message = {
   id: '0',
   content: 'Olá, vamos escolher o melhor oraculista...',
-  sender: 'agent' as const,
-  timestamp: new Date()
+  sender: 'assistant' as const,
+  timestamp: new Date(),
+  role: 'assistant'
 }
 
 interface ChatState {
@@ -26,11 +27,11 @@ export const useChatStore = create<ChatState>()(
       messages: [INITIAL_MESSAGE],
       threadId: null,
       setMinimized: (state) => set({ isMinimized: state }),
-      addMessage: (message) => set((state) => ({ 
-        messages: [...state.messages, message] 
+      addMessage: (message) => set((state) => ({
+        messages: [...state.messages, message]
       })),
       setThreadId: (threadId) => set({ threadId }),
-      resetChat: () => set({ 
+      resetChat: () => set({
         messages: [INITIAL_MESSAGE],
         isMinimized: false,
         threadId: null
