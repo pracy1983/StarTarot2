@@ -29,11 +29,13 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       if (session?.user) {
         // Buscar dados extras do usuário na tabela 'usuarios'
-        const { data: userData } = await supabase
+        const { data: userData, error: userError } = await supabase
           .from('usuarios')
           .select('*')
           .eq('id', session.user.id)
-          .single()
+          .maybeSingle()
+
+        if (userError) console.warn('Aviso: Perfil de usuário não encontrado ou erro na busca:', userError.message)
 
         set({
           user: {
@@ -63,11 +65,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (error) throw error
 
       if (data.user) {
-        const { data: userData } = await supabase
+        const { data: userData, error: userError } = await supabase
           .from('usuarios')
           .select('*')
           .eq('id', data.user.id)
-          .single()
+          .maybeSingle()
+
+        if (userError) console.warn('Aviso: Perfil não encontrado ao logar:', userError.message)
 
         set({
           user: {

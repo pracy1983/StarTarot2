@@ -66,6 +66,7 @@ export class ChatService {
           'Authorization': `Bearer ${process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY}`
         },
         body: JSON.stringify({
+          model: 'deepseek-chat',
           messages: this.messages,
           temperature: 0.7,
           max_tokens: 1000
