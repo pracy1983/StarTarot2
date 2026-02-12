@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { supabase } from '@/lib/supabase'
 
 interface User {
   id: string
@@ -16,14 +17,6 @@ interface AuthState {
   logout: () => Promise<void>
 }
 
-// Mock user para desenvolvimento
-const mockUser: User = {
-  id: '1',
-  name: 'Usuário Teste',
-  email: 'teste@exemplo.com',
-  isAdmin: true,
-}
-
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
@@ -31,10 +24,26 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   checkAuth: async () => {
     try {
-      // Simulando uma verificação de autenticação
-      const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
-      if (isAuthenticated) {
-        set({ user: mockUser, isAuthenticated: true, isLoading: false })
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (session?.user) {
+        // Buscar dados extras do usuário na tabela 'usuarios'
+        const { data: userData } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+
+        set({
+          user: {
+            id: session.user.id,
+            name: userData?.nome || session.user.email?.split('@')[0] || 'Usuário',
+            email: session.user.email || '',
+            isAdmin: userData?.is_admin || false
+          },
+          isAuthenticated: true,
+          isLoading: false
+        })
       } else {
         set({ user: null, isAuthenticated: false, isLoading: false })
       }
@@ -45,25 +54,42 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     try {
-      // Simulando um delay de autenticação
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-      // Mock de autenticação - em produção isso seria uma chamada real à API
-      if (email === 'teste@exemplo.com' && password === '123456') {
-        localStorage.setItem('isAuthenticated', 'true')
-        set({ user: mockUser, isAuthenticated: true })
+      if (error) throw error
+
+      if (data.user) {
+        const { data: userData } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('id', data.user.id)
+          .single()
+
+        set({
+          user: {
+            id: data.user.id,
+            name: userData?.nome || data.user.email?.split('@')[0] || 'Usuário',
+            email: data.user.email || '',
+            isAdmin: userData?.is_admin || false
+          },
+          isAuthenticated: true
+        })
         return { success: true }
       }
 
-      return { success: false, error: 'Email ou senha inválidos' }
-    } catch (error) {
-      return { success: false, error: 'Erro ao fazer login' }
+      return { success: false, error: 'Erro inesperado ao fazer login' }
+    } catch (error: any) {
+      console.error('Erro no login:', error)
+      return { success: false, error: error.message || 'Email ou senha inválidos' }
     }
   },
 
   logout: async () => {
     try {
-      localStorage.removeItem('isAuthenticated')
+      await supabase.auth.signOut()
       set({ user: null, isAuthenticated: false })
     } catch (error) {
       console.error('Erro ao fazer logout:', error)
