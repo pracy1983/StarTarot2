@@ -41,7 +41,7 @@ export function Header() {
       ) {
         setIsMenuOpen(false)
       }
-      
+
       // Menu notificações
       if (
         notificationsRef.current &&
@@ -70,10 +70,10 @@ export function Header() {
   }, [isMenuOpen])
 
   return (
-    <header className="bg-black/40 backdrop-blur-md border-b border-primary/20 relative z-60">
+    <header className="bg-black/40 backdrop-blur-md border-b border-primary/20 relative z-50">
       {/* Sombra sutil */}
       <div className="absolute -bottom-4 left-0 right-0 h-4 bg-gradient-to-b from-primary/10 to-transparent blur-xl"></div>
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -92,26 +92,26 @@ export function Header() {
 
           {/* Menu Principal - Desktop */}
           <nav className="hidden md:flex space-x-8">
-            <Link 
-              href="/credits" 
-              className="text-gray-300 hover:text-primary transition-colors duration-200"
+            <Link
+              href="/dashboard/creditos"
+              className="text-primary font-bold hover:text-primary-light transition-colors duration-200"
             >
-              Saldo: R$ 0,00
+              Saldo: {user?.credits || 0} créditos
             </Link>
-            <Link 
-              href="/dashboard/mensagens" 
+            <Link
+              href="/dashboard/mensagens"
               className="text-gray-300 hover:text-primary transition-colors duration-200"
             >
               Caixa de Mensagens
             </Link>
-            <Link 
-              href="/dashboard/oraculistas" 
+            <Link
+              href="/dashboard/oraculistas"
               className="text-gray-300 hover:text-primary transition-colors duration-200"
             >
               Oraculistas
             </Link>
-            <Link 
-              href="/dashboard/perfil" 
+            <Link
+              href="/dashboard/perfil"
               className="text-gray-300 hover:text-primary transition-colors duration-200"
             >
               Meu Perfil
@@ -121,7 +121,7 @@ export function Header() {
           {/* Menu Direito - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="relative">
-              <button 
+              <button
                 ref={notificationButtonRef}
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                 className="text-gray-300 hover:text-primary transition-colors duration-200"
@@ -137,9 +137,8 @@ export function Header() {
               {/* Menu de Notificações */}
               <div
                 ref={notificationsRef}
-                className={`absolute right-0 mt-2 w-80 transform transition-all duration-300 ease-in-out origin-top ${
-                  isNotificationsOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
-                }`}
+                className={`absolute right-0 mt-2 w-80 transform transition-all duration-300 ease-in-out origin-top ${isNotificationsOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
+                  }`}
               >
                 <div className="bg-black/95 backdrop-blur-md rounded-lg shadow-xl border border-primary/20">
                   <div className="p-4 border-b border-primary/20">
@@ -173,7 +172,7 @@ export function Header() {
               </Link>
             )}
 
-            <button 
+            <button
               onClick={() => logout()}
               className="text-gray-300 hover:text-primary transition-colors duration-200"
             >
@@ -185,7 +184,7 @@ export function Header() {
           <div className="flex md:hidden items-center space-x-4">
             {/* Notificações Mobile */}
             <div className="relative">
-              <button 
+              <button
                 ref={notificationButtonRef}
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                 className="text-gray-300 hover:text-primary transition-colors duration-200"
@@ -202,7 +201,7 @@ export function Header() {
             <button
               ref={buttonRef}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-300 hover:text-primary transition-colors duration-200 z-60"
+              className="text-gray-300 hover:text-primary transition-colors duration-200 z-50"
             >
               {isMenuOpen ? (
                 <XMarkIcon className="h-6 w-6" />
@@ -215,47 +214,45 @@ export function Header() {
       </div>
 
       {/* Overlay (compartilhado entre menu mobile e notificações) */}
-      <div 
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-in-out md:hidden ${
-          (isMenuOpen || isNotificationsOpen) ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
+      <div
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-in-out md:hidden ${(isMenuOpen || isNotificationsOpen) ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
         aria-hidden="true"
       />
 
       {/* Menu Mobile */}
       <div
         ref={menuRef}
-        className={`absolute right-0 top-0 h-auto w-64 bg-black/95 backdrop-blur-md transform transition-all duration-300 ease-in-out md:hidden ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`absolute right-0 top-0 h-auto w-64 bg-black/95 backdrop-blur-md transform transition-all duration-300 ease-in-out md:hidden ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="px-2 pt-20 pb-3 space-y-1">
-          <Link 
-            href="/credits" 
-            className="block px-4 py-3 text-gray-300 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
+          <Link
+            href="/dashboard/creditos"
+            className="block px-4 py-3 text-primary font-bold hover:bg-primary/5 rounded-lg transition-all duration-200"
           >
-            Saldo: R$ 0,00
+            Saldo: {user?.credits || 0} créditos
           </Link>
-          <Link 
-            href="/dashboard/mensagens" 
+          <Link
+            href="/dashboard/mensagens"
             className="block px-4 py-3 text-gray-300 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
           >
             Caixa de Mensagens
           </Link>
-          <Link 
-            href="/dashboard/oraculistas" 
+          <Link
+            href="/dashboard/oraculistas"
             className="block px-4 py-3 text-gray-300 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
           >
             Oraculistas
           </Link>
-          <Link 
-            href="/dashboard/perfil" 
+          <Link
+            href="/dashboard/perfil"
             className="block px-4 py-3 text-gray-300 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
           >
             Meu Perfil
           </Link>
           <div className="flex items-center justify-between px-4 py-3">
-            <button 
+            <button
               onClick={() => {
                 setIsMenuOpen(false)
                 logout()
@@ -271,9 +268,8 @@ export function Header() {
       {/* Menu de Notificações Mobile */}
       <div
         ref={notificationsRef}
-        className={`absolute right-0 top-0 h-auto w-64 bg-black/95 backdrop-blur-md transform transition-all duration-300 ease-in-out md:hidden ${
-          isNotificationsOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`absolute right-0 top-0 h-auto w-64 bg-black/95 backdrop-blur-md transform transition-all duration-300 ease-in-out md:hidden ${isNotificationsOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="px-2 pt-20 pb-3">
           <h3 className="text-lg font-semibold text-primary mb-4 px-4">Notificações</h3>

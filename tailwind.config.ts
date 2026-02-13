@@ -9,9 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#FFD700', // Dourado
-        'primary-light': '#FFE44D',
-        'primary-dark': '#B39700',
+        primary: {
+          DEFAULT: '#FFB800',
+          light: '#FFD700',
+          dark: '#CC9200',
+        },
         surface: '#1A1A1A',
         background: '#000000',
         'on-primary': '#000000',

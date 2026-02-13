@@ -22,18 +22,18 @@ export default function DashboardPage() {
       {/* Cards de Ações */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Iniciar Consulta */}
-        <Link 
+        <Link
           href="/dashboard/consulta"
           className="group relative overflow-hidden rounded-2xl"
         >
           {/* Background do card */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 group-hover:opacity-15 transition-opacity duration-200"
             style={{ backgroundImage: 'url(/background.jpg)' }}
           />
-          
+
           {/* Conteúdo do card */}
-          <div className="relative z-20 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl
+          <div className="relative z-10 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl
                         group-hover:border-primary transition-all duration-200 ease-in-out">
             <div className="space-y-4">
               <ChatBubbleLeftRightIcon className="h-8 w-8 text-primary" />
@@ -46,18 +46,18 @@ export default function DashboardPage() {
         </Link>
 
         {/* Adicionar Créditos */}
-        <Link 
+        <Link
           href="/credits"
           className="group relative overflow-hidden rounded-2xl"
         >
           {/* Background do card */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 group-hover:opacity-15 transition-opacity duration-200"
             style={{ backgroundImage: 'url(/background.jpg)' }}
           />
-          
+
           {/* Conteúdo do card */}
-          <div className="relative z-20 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl
+          <div className="relative z-10 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl
                         group-hover:border-primary transition-all duration-200 ease-in-out">
             <div className="space-y-4">
               <CreditCardIcon className="h-8 w-8 text-primary" />
@@ -70,18 +70,18 @@ export default function DashboardPage() {
         </Link>
 
         {/* Ver Oraculistas */}
-        <Link 
+        <Link
           href="/dashboard/oraculistas"
           className="group relative overflow-hidden rounded-2xl"
         >
           {/* Background do card */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 group-hover:opacity-15 transition-opacity duration-200"
             style={{ backgroundImage: 'url(/background.jpg)' }}
           />
-          
+
           {/* Conteúdo do card */}
-          <div className="relative z-20 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl
+          <div className="relative z-10 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl
                         group-hover:border-primary transition-all duration-200 ease-in-out">
             <div className="space-y-4">
               <UserGroupIcon className="h-8 w-8 text-primary" />
@@ -97,13 +97,13 @@ export default function DashboardPage() {
       {/* Recado da Espiritualidade */}
       <div className="relative overflow-hidden rounded-2xl">
         {/* Background da seção */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
           style={{ backgroundImage: 'url(/background.jpg)' }}
         />
-        
+
         {/* Conteúdo da seção */}
-        <div className="relative z-20 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl">
+        <div className="relative z-10 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl">
           <h2 className="text-2xl font-semibold text-primary mb-4">Recado da Espiritualidade</h2>
           <p className="text-gray-300 text-center py-4 text-lg">
             "A vida é uma jornada de autodescoberta. Cada desafio é uma oportunidade de crescimento, e cada momento de paz é um presente do universo. Mantenha seu coração aberto às mensagens que o cosmos tem para você."
@@ -114,13 +114,13 @@ export default function DashboardPage() {
       {/* Últimas Consultas */}
       <div className="relative overflow-hidden rounded-2xl">
         {/* Background da seção */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
           style={{ backgroundImage: 'url(/background.jpg)' }}
         />
-        
+
         {/* Conteúdo da seção */}
-        <div className="relative z-20 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl">
+        <div className="relative z-10 p-6 bg-black/20 backdrop-blur-md border border-primary/20 rounded-2xl">
           <h2 className="text-2xl font-semibold text-primary mb-4">Últimas Consultas</h2>
           <div className="space-y-4">
             <p className="text-gray-300 text-center py-8">

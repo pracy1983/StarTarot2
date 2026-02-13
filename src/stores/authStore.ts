@@ -6,6 +6,11 @@ interface User {
   name: string
   email: string
   isAdmin: boolean
+  credits?: number
+  phone_ddd?: string
+  phone_number?: string
+  birth_date?: string
+  avatar_url?: string | null
 }
 
 interface AuthState {
@@ -42,7 +47,12 @@ export const useAuthStore = create<AuthState>((set) => ({
             id: session.user.id,
             name: userData?.nome || session.user.email?.split('@')[0] || 'Usuário',
             email: session.user.email || '',
-            isAdmin: userData?.is_admin || false
+            isAdmin: userData?.is_admin || false,
+            credits: userData?.credits || 0,
+            phone_ddd: userData?.phone_ddd,
+            phone_number: userData?.phone_number,
+            birth_date: userData?.birth_date,
+            avatar_url: userData?.avatar_url
           },
           isAuthenticated: true,
           isLoading: false
@@ -78,7 +88,12 @@ export const useAuthStore = create<AuthState>((set) => ({
             id: data.user.id,
             name: userData?.nome || data.user.email?.split('@')[0] || 'Usuário',
             email: data.user.email || '',
-            isAdmin: userData?.is_admin || false
+            isAdmin: userData?.is_admin || false,
+            credits: userData?.credits || 0,
+            phone_ddd: userData?.phone_ddd,
+            phone_number: userData?.phone_number,
+            birth_date: userData?.birth_date,
+            avatar_url: userData?.avatar_url
           },
           isAuthenticated: true
         })
